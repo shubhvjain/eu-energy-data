@@ -14,11 +14,14 @@ def getAPIToken():
     raise ValueError(f"The required environment variable '{variable_name}' is not set.")
   return value
 
-
-
 def entsoe_getActualGenerationDataPerProductionType(options={"country": "", "start": "", "end": ""}):
     client1 = entsoePandas(api_key=getAPIToken())
     data1 = client1.query_generation(options["country"], start=pd.Timestamp(options["start"], tz='UTC'), end=pd.Timestamp(options["end"], tz='UTC'),psr_type=None)
+    
+    if DEBUG:   
+      fileName1= options["country"]+"-"+options["start"]+"-"+options["end"]+"-actual-raw-raw"
+      data1.to_csv("./test/"+fileName1+".csv")
+    
     columns_to_drop = [col for col in data1.columns if col[1] == 'Actual Consumption']
     data1['startTimeIndex'] = data1.index.strftime('%Y%m%d%H%M')
     data1['startTimeIndex'] = pd.to_datetime(data1['startTimeIndex'])
@@ -32,22 +35,29 @@ def entsoe_getActualGenerationDataPerProductionType(options={"country": "", "sta
        data1["startTime"] = timeStampsUTC["startBin"]
        data1["endTime"] = timeStampsUTC["endBin"]
     else:
+       print(options)
        raise ValueError("The length do not match.Check data manually")
         
     if DEBUG:   
-      fileName= options["country"]+"-"+options["start"]+"-"+options["end"]+"-"+str(durationMin)+'-raw'
+      fileName= options["country"]+"-"+options["start"]+"-"+options["end"]+"-"+str(durationMin)+'-actual-raw'
       data1.to_csv("./test/"+fileName+".csv")
     
     data1 = data1.drop(columns=columns_to_drop)
     data1.columns = [(col[0] if isinstance(col, tuple) else col) for col in data1.columns]
     data1 = data1.reset_index(drop=True)
-    return data1
+    return {"data":data1,"duration":durationMin}
 
 
 def getActualRenewableValues(options={"country":"","start":"","end":"", "interval60":True}):
     totalRaw = entsoe_getActualGenerationDataPerProductionType(options)
-    total = totalRaw
-    table = total 
+    total = totalRaw["data"]
+    duration = totalRaw["duration"]
+    if options["interval60"] == True & totalRaw["duration"] != 60 :
+      print("need to be converted")
+      table = util.convertTo60MinInterval(totalRaw,options["start"],options["end"])
+      duration = 60
+    else: 
+      table = total 
     renewableSources = ["Geothermal","Hydro Pumped Storage","Hydro Run-of-river and poundage","Hydro Water Reservoir","Marine","Other renewable","Solar","Waste","Wind Offshore","Wind Onshore"]
     windSolarOnly = ["Solar","Wind Offshore","Wind Onshore"]
     nonRenewableSources = ["Biomass","Fossil Brown coal/Lignite","Fossil Coal-derived gas","Fossil Gas","Fossil Hard coal","Fossil Oil","Fossil Oil shale","Fossil Peal","Nuclear","Other"]
@@ -65,4 +75,4 @@ def getActualRenewableValues(options={"country":"","start":"","end":"", "interva
     table["percentRenewableWS"] = ( table["renewableTotalWS"] / table["total"] ) * 100
     table['percentRenewableWS'].fillna(0, inplace=True)
     table["percentRenewableWS"] = table["percentRenewableWS"].round().astype(int)
-    return table
+    return {"data":table,"duration":duration}
