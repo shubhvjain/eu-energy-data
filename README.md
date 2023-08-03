@@ -1,5 +1,5 @@
-# eu-energy-data
-Gathering and analyzing electricity generation data from the ENTSO-E portal 
+# EU Energy Data
+Gathering and analyzing electricity generation data from the ENTSO-E portal.
 
 ## Setup 
 
@@ -10,9 +10,12 @@ Gathering and analyzing electricity generation data from the ENTSO-E portal
 
 
 
-## Folder structure
+## Project folder structure
 - `entsoe.py` : contains code to get data from ENTSOE portal using the "entsoe-py" client 
 - `util.py` : contains utility functions 
 - `rawData` folder : contains various types of data downloaded from different countries from the entsoe APIs
 - `trainingData` folder :  contains data used to train prediction models
 - `analysis` folder : some note books analyzing  downloaded data
+
+## Usage
+Todo... 
