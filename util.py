@@ -32,7 +32,7 @@ def convertTo60MinInterval(rawData, start, end):
         # determing how many rows need to be combined to get data in 60 min format. The rows are com
         groupingFactor = int(60/duration)
         oldData = rawData["data"]
-        dataColToRemove = ['startTimeIndex', 'startTime', 'endTime']
+        dataColToRemove = ['startTime', 'endTime']
         oldData = oldData.drop(dataColToRemove, axis=1)
         oldData['group_id'] = oldData.index // groupingFactor
         newGroupedData = oldData.groupby('group_id').mean()

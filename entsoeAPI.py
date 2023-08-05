@@ -5,6 +5,9 @@ from entsoe import EntsoePandasClient as entsoePandas
 import os
 import util 
 
+import logging
+logging.basicConfig(filename='entsoe.log', format='%(asctime)s - %(levelname)s - %(message)s',level="INFO")
+
 DEBUG=True
 
 def getAPIToken():
@@ -15,38 +18,55 @@ def getAPIToken():
   return value
 
 def entsoe_getActualGenerationDataPerProductionType(options={"country": "", "start": "", "end": ""}):
+    logging.info(options)
+    
+    startDay = pd.Timestamp(options["start"], tz='UTC')
+    endDay = pd.Timestamp(options["end"], tz='UTC')
     client1 = entsoePandas(api_key=getAPIToken())
-    data1 = client1.query_generation(options["country"], start=pd.Timestamp(options["start"], tz='UTC'), end=pd.Timestamp(options["end"], tz='UTC'),psr_type=None)
-    
-    if DEBUG:   
-      fileName1= options["country"]+"-"+options["start"]+"-"+options["end"]+"-actual-raw-raw"
-      data1.to_csv("./test/"+fileName1+".csv")
-    
-    columns_to_drop = [col for col in data1.columns if col[1] == 'Actual Consumption']
-    data1['startTimeIndex'] = data1.index.strftime('%Y%m%d%H%M')
-    data1['startTimeIndex'] = pd.to_datetime(data1['startTimeIndex'])
-    
-    duration = data1['startTimeIndex'].iloc[1] - data1['startTimeIndex'].iloc[0]
-    durationMin = duration.seconds // 60
+    data1 = client1.query_generation(options["country"], start=startDay, end=endDay,psr_type=None)
+    logging.info("  Fetched rows : "+str(len(data1)))
 
-    timeStampsUTC = util.countIntervals(options["start"],options["end"],durationMin)
+    columns_to_drop = [col for col in data1.columns if col[1] == 'Actual Consumption']
+    data1 = data1.drop(columns=columns_to_drop)
+    data1.columns = [(col[0] if isinstance(col, tuple) else col) for col in data1.columns]
     
-    if len(data1) == timeStampsUTC["count"]:
-       data1["startTime"] = timeStampsUTC["startBin"]
-       data1["endTime"] = timeStampsUTC["endBin"]
-    else:
-       print(options)
-       raise ValueError("The length do not match.Check data manually")
-        
+    durationMin = (data1.index[1] - data1.index[0]).total_seconds() / 60
+    dur = pd.Timedelta(minutes=durationMin)
+    timeStampsUTC = util.countIntervals(options["start"],options["end"],durationMin)
+    logging.info("  Required rows : "+str(timeStampsUTC["count"]))
+    logging.info("  Duration : "+str(durationMin))
+    start_time = data1.index.min()
+    end_time = data1.index.max()
+    expected_timestamps = pd.date_range(start=start_time, end=end_time, freq=f"{durationMin}T")
+    expected_df = pd.DataFrame(index=expected_timestamps)
+    missing_indices = expected_df.index.difference(data1.index)
+    logging.info("  Missing values:"+str(missing_indices))
+    for index in missing_indices:
+      logging.info("    Missing value: "+str(index))
+      rows_same_day = data1[ data1.index.date == index.date()]
+      avg_val = rows_same_day.mean().round().astype(int)
+      logging.info("      replaced with day average value of "+str(rows_same_day.index[0].date())+" : "+' '.join(avg_val.astype(str)))
+      new_row = pd.DataFrame([avg_val], columns=data1.columns, index=[index])
+      data1 = pd.concat([data1, new_row])            
+      # prev_index = index - dur
+      # next_index = index + dur
+      # avg_val = (data1.loc[prev_index]+data1.loc[next_index])/2
+      # logging.info("      previous value: " + ' '.join(data1.loc[prev_index].astype(str)))
+      # logging.info("      previous value: " + ' '.join(data1.loc[next_index].astype(str)))
+      # logging.info("      average value: " + ' '.join(avg_val.astype(str)))
+      # new_row = pd.DataFrame([avg_val], columns=data1.columns, index=[index])
+      # data1 = pd.concat([data1, new_row])
+    data1.sort_index(inplace=True)
+    
+    data1["startTime"] = timeStampsUTC["startBin"]
+    data1["endTime"] = timeStampsUTC["endBin"]
+
     if DEBUG:   
       fileName= options["country"]+"-"+options["start"]+"-"+options["end"]+"-"+str(durationMin)+'-actual-raw'
       data1.to_csv("./test/"+fileName+".csv")
     
-    data1 = data1.drop(columns=columns_to_drop)
-    data1.columns = [(col[0] if isinstance(col, tuple) else col) for col in data1.columns]
     data1 = data1.reset_index(drop=True)
     return {"data":data1,"duration":durationMin}
-
 
 
 def entsoe_getDayAheadAggregatedGeneration(options={"country": "", "start": "", "end": ""}):
@@ -112,7 +132,7 @@ def getActualRenewableValues(options={"country":"","start":"","end":"", "interva
     totalRaw = entsoe_getActualGenerationDataPerProductionType(options)
     total = totalRaw["data"]
     duration = totalRaw["duration"]
-    if options["interval60"] == True & totalRaw["duration"] != 60 :
+    if options["interval60"] == True and totalRaw["duration"] != 60.0 :
       print("Data will to be converted to 60 min interval")
       table = util.convertTo60MinInterval(totalRaw,options["start"],options["end"])
       duration = 60
