@@ -348,3 +348,25 @@
 2023-08-05 21:42:16,917 - INFO -   Missing values:DatetimeIndex([], dtype='datetime64[ns, Europe/Zurich]', freq='60T')
 2023-08-05 21:42:17,047 - INFO - [Stop] Getting : CH-202001010000-202301010000-actual-60.0 ; Took : 102.71 s
 
+2023-08-05 22:07:08,670 - INFO - [Start] Getting : NO-202001010000-202301010000-actual
+2023-08-05 22:07:08,670 - INFO - {'start': '202001010000', 'end': '202301010000', 'country': 'NO', 'interval60': True}
+2023-08-05 22:08:50,649 - INFO -   Fetched rows : 26298
+2023-08-05 22:08:50,727 - INFO -   Required rows : 26304
+2023-08-05 22:08:50,727 - INFO -   Duration : 60.0
+2023-08-05 22:08:50,729 - INFO -   Missing values:DatetimeIndex(['2020-07-25 17:00:00+02:00', '2020-07-25 18:00:00+02:00',
+               '2020-07-25 19:00:00+02:00', '2020-07-25 20:00:00+02:00',
+               '2020-07-25 21:00:00+02:00', '2022-10-17 19:00:00+02:00'],
+              dtype='datetime64[ns, Europe/Oslo]', freq=None)
+2023-08-05 22:08:50,729 - INFO -     Missing value: 2020-07-25 17:00:00+02:00
+2023-08-05 22:08:50,733 - INFO -       replaced with day average value of 2020-07-25 : 0 232 806 1219 13200 19 33 67 480
+2023-08-05 22:08:50,735 - INFO -     Missing value: 2020-07-25 18:00:00+02:00
+2023-08-05 22:08:50,738 - INFO -       replaced with day average value of 2020-07-25 : 0 232 806 1219 13200 19 33 67 480
+2023-08-05 22:08:50,739 - INFO -     Missing value: 2020-07-25 19:00:00+02:00
+2023-08-05 22:08:50,743 - INFO -       replaced with day average value of 2020-07-25 : 0 232 806 1219 13200 19 33 67 480
+2023-08-05 22:08:50,743 - INFO -     Missing value: 2020-07-25 20:00:00+02:00
+2023-08-05 22:08:50,747 - INFO -       replaced with day average value of 2020-07-25 : 0 232 806 1219 13200 19 33 67 480
+2023-08-05 22:08:50,748 - INFO -     Missing value: 2020-07-25 21:00:00+02:00
+2023-08-05 22:08:50,752 - INFO -       replaced with day average value of 2020-07-25 : 0 232 806 1219 13200 19 33 67 480
+2023-08-05 22:08:50,752 - INFO -     Missing value: 2022-10-17 19:00:00+02:00
+2023-08-05 22:08:50,756 - INFO -       replaced with day average value of 2022-10-17 : 0 221 35 3574 9648 0 33 17 1444
+2023-08-05 22:08:50,917 - INFO - [Stop] Getting : NO-202001010000-202301010000-actual-60.0 ; Took : 102.25 s
