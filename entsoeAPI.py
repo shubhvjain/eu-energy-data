@@ -44,7 +44,7 @@ def entsoe_getActualGenerationDataPerProductionType(options={"country": "", "sta
     for index in missing_indices:
       logging.info("    Missing value: "+str(index))
       rows_same_day = data1[ data1.index.date == index.date()]
-      avg_val = rows_same_day.mean().round().astype(int)
+      avg_val = rows_same_day.mean().fillna(0).round().astype(int)
       logging.info("      replaced with day average value of "+str(rows_same_day.index[0].date())+" : "+' '.join(avg_val.astype(str)))
       new_row = pd.DataFrame([avg_val], columns=data1.columns, index=[index])
       data1 = pd.concat([data1, new_row])            
