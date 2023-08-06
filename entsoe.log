@@ -370,3 +370,24 @@
 2023-08-05 22:08:50,752 - INFO -     Missing value: 2022-10-17 19:00:00+02:00
 2023-08-05 22:08:50,756 - INFO -       replaced with day average value of 2022-10-17 : 0 221 35 3574 9648 0 33 17 1444
 2023-08-05 22:08:50,917 - INFO - [Stop] Getting : NO-202001010000-202301010000-actual-60.0 ; Took : 102.25 s
+
+2023-08-06 03:20:23,061 - INFO - [Start] Getting : HU-202001010000-202301010000-actual
+2023-08-06 03:20:23,062 - INFO - {'start': '202001010000', 'end': '202301010000', 'country': 'HU', 'interval60': False}
+2023-08-06 03:27:08,489 - INFO -   Row count : Fetched =  105216 , Required = 105216
+2023-08-06 03:27:08,490 - INFO -   Duration : 15.0
+2023-08-06 03:27:08,490 - INFO -   Missing values:DatetimeIndex([], dtype='datetime64[ns, Europe/Budapest]', freq='15T')
+2023-08-06 03:27:09,214 - INFO - [Stop] Getting : HU-202001010000-202301010000-actual-15.0 ; Took : 406.15 s
+
+2023-08-06 03:27:09,831 - INFO - [Start] Getting : NL-202001010000-202301010000-actual
+2023-08-06 03:27:09,831 - INFO - {'start': '202001010000', 'end': '202301010000', 'country': 'NL', 'interval60': False}
+2023-08-06 03:33:09,768 - INFO -   Row count : Fetched =  105216 , Required = 105216
+2023-08-06 03:33:09,768 - INFO -   Duration : 15.0
+2023-08-06 03:33:09,769 - INFO -   Missing values:DatetimeIndex([], dtype='datetime64[ns, Europe/Amsterdam]', freq='15T')
+2023-08-06 03:33:10,399 - INFO - [Stop] Getting : NL-202001010000-202301010000-actual-15.0 ; Took : 360.57 s
+
+2023-08-06 03:33:10,930 - INFO - [Start] Getting : LU-202001010000-202301010000-actual
+2023-08-06 03:33:10,930 - INFO - {'start': '202001010000', 'end': '202301010000', 'country': 'LU', 'interval60': False}
+2023-08-06 03:35:53,833 - INFO -   Row count : Fetched =  105216 , Required = 105216
+2023-08-06 03:35:53,834 - INFO -   Duration : 15.0
+2023-08-06 03:35:53,835 - INFO -   Missing values:DatetimeIndex([], dtype='datetime64[ns, Europe/Luxembourg]', freq='15T')
+2023-08-06 03:35:54,347 - INFO - [Stop] Getting : LU-202001010000-202301010000-actual-15.0 ; Took : 163.42 s
