@@ -391,3 +391,93 @@
 2023-08-06 03:35:53,834 - INFO -   Duration : 15.0
 2023-08-06 03:35:53,835 - INFO -   Missing values:DatetimeIndex([], dtype='datetime64[ns, Europe/Luxembourg]', freq='15T')
 2023-08-06 03:35:54,347 - INFO - [Stop] Getting : LU-202001010000-202301010000-actual-15.0 ; Took : 163.42 s
+
+2023-08-06 03:47:35,928 - INFO - [Start] Getting : DE-202001010000-202301010000-forecast
+2023-08-06 03:47:59,791 - INFO -   Row count : Fetched =  26304 , Required = 26304
+2023-08-06 03:47:59,791 - INFO -   Duration : 60.0
+2023-08-06 03:47:59,792 - INFO -   Missing values:DatetimeIndex([], dtype='datetime64[ns, Europe/Berlin]', freq='60T')
+2023-08-06 03:49:12,267 - INFO -   Row count : Fetched =  105216 , Required = 105216
+2023-08-06 03:49:12,267 - INFO -   Duration : 15.0
+2023-08-06 03:49:12,268 - INFO -   Missing values:DatetimeIndex([], dtype='datetime64[ns, Europe/Berlin]', freq='15T')
+2023-08-06 03:49:12,607 - INFO - [Stop] Getting : DE-202001010000-202301010000-forecast-60 ; Took : 96.68 s
+
+2023-08-06 03:49:28,962 - INFO - [Start] Getting : BE-202001010000-202301010000-forecast
+2023-08-06 03:49:43,792 - INFO -   Row count : Fetched =  26304 , Required = 26304
+2023-08-06 03:49:43,792 - INFO -   Duration : 60.0
+2023-08-06 03:49:43,793 - INFO -   Missing values:DatetimeIndex([], dtype='datetime64[ns, Europe/Brussels]', freq='60T')
+2023-08-06 03:50:21,020 - INFO -   Row count : Fetched =  26304 , Required = 26304
+2023-08-06 03:50:21,021 - INFO -   Duration : 60.0
+2023-08-06 03:50:21,021 - INFO -   Missing values:DatetimeIndex([], dtype='datetime64[ns, Europe/Brussels]', freq='60T')
+2023-08-06 03:50:21,090 - INFO - [Stop] Getting : BE-202001010000-202301010000-forecast-60 ; Took : 52.13 s
+
+2023-08-06 03:51:23,039 - INFO - [Start] Getting : CZ-202001010000-202301010000-forecast
+2023-08-06 03:51:39,988 - INFO -   Row count : Fetched =  26304 , Required = 26304
+2023-08-06 03:51:39,989 - INFO -   Duration : 60.0
+2023-08-06 03:51:39,989 - INFO -   Missing values:DatetimeIndex([], dtype='datetime64[ns, Europe/Prague]', freq='60T')
+2023-08-06 03:52:04,062 - INFO -   Row count : Fetched =  26304 , Required = 26304
+2023-08-06 03:52:04,062 - INFO -   Duration : 60.0
+2023-08-06 03:52:04,063 - INFO -   Missing values:DatetimeIndex([], dtype='datetime64[ns, Europe/Prague]', freq='60T')
+2023-08-06 03:52:04,108 - INFO - [Stop] Getting : CZ-202001010000-202301010000-forecast-60 ; Took : 41.07 s
+
+2023-08-06 03:53:08,674 - INFO - [Start] Getting : FI-202001010000-202301010000-forecast
+2023-08-06 03:53:21,988 - INFO -   Row count : Fetched =  26304 , Required = 26304
+2023-08-06 03:53:21,988 - INFO -   Duration : 60.0
+2023-08-06 03:53:21,988 - INFO -   Missing values:DatetimeIndex([], dtype='datetime64[ns, Europe/Helsinki]', freq='60T')
+2023-08-06 03:53:53,667 - INFO -   Row count : Fetched =  26304 , Required = 26304
+2023-08-06 03:53:53,668 - INFO -   Duration : 60.0
+2023-08-06 03:53:53,668 - INFO -   Missing values:DatetimeIndex([], dtype='datetime64[ns, Europe/Helsinki]', freq='60T')
+2023-08-06 03:53:53,721 - INFO - [Stop] Getting : FI-202001010000-202301010000-forecast-60 ; Took : 45.05 s
+
+2023-08-06 03:54:06,469 - INFO - [Start] Getting : HU-202001010000-202301010000-forecast
+2023-08-06 03:54:28,456 - INFO -   Row count : Fetched =  105216 , Required = 105216
+2023-08-06 03:54:28,457 - INFO -   Duration : 15.0
+2023-08-06 03:54:28,457 - INFO -   Missing values:DatetimeIndex([], dtype='datetime64[ns, Europe/Budapest]', freq='15T')
+2023-08-06 03:55:18,004 - INFO -   Row count : Fetched =  105216 , Required = 105216
+2023-08-06 03:55:18,005 - INFO -   Duration : 15.0
+2023-08-06 03:55:18,005 - INFO -   Missing values:DatetimeIndex([], dtype='datetime64[ns, Europe/Budapest]', freq='15T')
+2023-08-06 03:55:18,292 - INFO - [Stop] Getting : HU-202001010000-202301010000-forecast-60 ; Took : 71.82 s
+
+2023-08-06 03:56:15,770 - INFO - [Start] Getting : LT-202001010000-202301010000-forecast
+2023-08-06 03:56:30,573 - INFO -   Row count : Fetched =  26304 , Required = 26304
+2023-08-06 03:56:30,573 - INFO -   Duration : 60.0
+2023-08-06 03:56:30,573 - INFO -   Missing values:DatetimeIndex([], dtype='datetime64[ns, Europe/Vilnius]', freq='60T')
+2023-08-06 03:57:00,838 - INFO -   Row count : Fetched =  26304 , Required = 26304
+2023-08-06 03:57:00,839 - INFO -   Duration : 60.0
+2023-08-06 03:57:00,839 - INFO -   Missing values:DatetimeIndex([], dtype='datetime64[ns, Europe/Vilnius]', freq='60T')
+2023-08-06 03:57:00,893 - INFO - [Stop] Getting : LT-202001010000-202301010000-forecast-60 ; Took : 45.12 s
+
+2023-08-06 03:57:56,332 - INFO - [Start] Getting : NL-202001010000-202301010000-forecast
+2023-08-06 03:58:12,860 - INFO -   Row count : Fetched =  26304 , Required = 26304
+2023-08-06 03:58:12,860 - INFO -   Duration : 60.0
+2023-08-06 03:58:12,862 - INFO -   Missing values:DatetimeIndex([], dtype='datetime64[ns, Europe/Amsterdam]', freq=None)
+2023-08-06 03:59:16,112 - INFO -   Row count : Fetched =  105216 , Required = 105216
+2023-08-06 03:59:16,113 - INFO -   Duration : 15.0
+2023-08-06 03:59:16,113 - INFO -   Missing values:DatetimeIndex([], dtype='datetime64[ns, Europe/Amsterdam]', freq='15T')
+2023-08-06 03:59:16,452 - INFO - [Stop] Getting : NL-202001010000-202301010000-forecast-60 ; Took : 80.12 s
+
+2023-08-06 03:59:44,279 - INFO - [Start] Getting : PL-202001010000-202301010000-forecast
+2023-08-06 03:59:55,451 - INFO -   Row count : Fetched =  26304 , Required = 26304
+2023-08-06 03:59:55,451 - INFO -   Duration : 60.0
+2023-08-06 03:59:55,452 - INFO -   Missing values:DatetimeIndex([], dtype='datetime64[ns, Europe/Warsaw]', freq='60T')
+2023-08-06 04:00:38,031 - INFO -   Row count : Fetched =  26304 , Required = 26304
+2023-08-06 04:00:38,031 - INFO -   Duration : 60.0
+2023-08-06 04:00:38,032 - INFO -   Missing values:DatetimeIndex([], dtype='datetime64[ns, Europe/Warsaw]', freq='60T')
+2023-08-06 04:00:38,086 - INFO - [Stop] Getting : PL-202001010000-202301010000-forecast-60 ; Took : 53.81 s
+
+2023-08-06 04:03:53,703 - INFO - [Start] Getting : ES-202001010000-202301010000-forecast
+2023-08-06 04:04:22,362 - INFO -   Row count : Fetched =  26304 , Required = 26304
+2023-08-06 04:04:22,363 - INFO -   Duration : 60.0
+2023-08-06 04:04:22,364 - INFO -   Missing values:DatetimeIndex([], dtype='datetime64[ns, Europe/Madrid]', freq=None)
+2023-08-06 04:05:01,873 - INFO -   Row count : Fetched =  26304 , Required = 26304
+2023-08-06 04:05:01,873 - INFO -   Duration : 60.0
+2023-08-06 04:05:01,875 - INFO -   Missing values:DatetimeIndex([], dtype='datetime64[ns, Europe/Madrid]', freq=None)
+2023-08-06 04:05:01,936 - INFO - [Stop] Getting : ES-202001010000-202301010000-forecast-60 ; Took : 68.23 s
+
+2023-08-06 04:05:50,916 - INFO - [Start] Getting : CH-202001010000-202301010000-forecast
+2023-08-06 04:06:02,168 - INFO -   Row count : Fetched =  26304 , Required = 26304
+2023-08-06 04:06:02,168 - INFO -   Duration : 60.0
+2023-08-06 04:06:02,169 - INFO -   Missing values:DatetimeIndex([], dtype='datetime64[ns, Europe/Zurich]', freq='60T')
+2023-08-06 04:06:34,505 - INFO -   Row count : Fetched =  26304 , Required = 26304
+2023-08-06 04:06:34,505 - INFO -   Duration : 60.0
+2023-08-06 04:06:34,506 - INFO -   Missing values:DatetimeIndex([], dtype='datetime64[ns, Europe/Zurich]', freq='60T')
+2023-08-06 04:06:34,555 - INFO - [Stop] Getting : CH-202001010000-202301010000-forecast-60 ; Took : 43.64 s

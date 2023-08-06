@@ -17,56 +17,61 @@ def getAPIToken():
     raise ValueError(f"The required environment variable '{variable_name}' is not set.")
   return value
 
+def refineData(options,data1):
+  durationMin = (data1.index[1] - data1.index[0]).total_seconds() / 60
+  timeStampsUTC = util.countIntervals(options["start"],options["end"],durationMin)
+
+  logging.info("  Row count : Fetched =  "+str(len(data1))+" , Required = "+str(timeStampsUTC["count"]))
+  logging.info("  Duration : "+str(durationMin))
+
+  start_time = data1.index.min()
+  end_time = data1.index.max()
+  expected_timestamps = pd.date_range(start=start_time, end=end_time, freq=f"{durationMin}T")
+  expected_df = pd.DataFrame(index=expected_timestamps)
+  missing_indices = expected_df.index.difference(data1.index)
+  logging.info("  Missing values:"+str(missing_indices))
+  for index in missing_indices:
+    logging.info("    Missing value: "+str(index))
+    rows_same_day = data1[ data1.index.date == index.date()]
+    avg_val = rows_same_day.mean().fillna(0).round().astype(int)
+    logging.info("      replaced with day average value of "+str(rows_same_day.index[0].date())+" : "+' '.join(avg_val.astype(str)))
+    new_row = pd.DataFrame([avg_val], columns=data1.columns, index=[index])
+    data1 = pd.concat([data1, new_row])            
+    # prev_index = index - dur
+    # next_index = index + dur
+    # avg_val = (data1.loc[prev_index]+data1.loc[next_index])/2
+    # logging.info("      previous value: " + ' '.join(data1.loc[prev_index].astype(str)))
+    # logging.info("      previous value: " + ' '.join(data1.loc[next_index].astype(str)))
+    # logging.info("      average value: " + ' '.join(avg_val.astype(str)))
+    # new_row = pd.DataFrame([avg_val], columns=data1.columns, index=[index])
+    # data1 = pd.concat([data1, new_row])
+  data1.sort_index(inplace=True)
+  
+  data1["startTime"] = timeStampsUTC["startBin"]
+  data1["endTime"] = timeStampsUTC["endBin"]
+  return data1
+
 def entsoe_getActualGenerationDataPerProductionType(options={"country": "", "start": "", "end": ""}):
     logging.info(options)
-    
     startDay = pd.Timestamp(options["start"], tz='UTC')
     endDay = pd.Timestamp(options["end"], tz='UTC')
     client1 = entsoePandas(api_key=getAPIToken())
     data1 = client1.query_generation(options["country"], start=startDay, end=endDay,psr_type=None)
-    logging.info("  Fetched rows : "+str(len(data1)))
 
     columns_to_drop = [col for col in data1.columns if col[1] == 'Actual Consumption']
     data1 = data1.drop(columns=columns_to_drop)
     data1.columns = [(col[0] if isinstance(col, tuple) else col) for col in data1.columns]
     
     durationMin = (data1.index[1] - data1.index[0]).total_seconds() / 60
-    dur = pd.Timedelta(minutes=durationMin)
-    timeStampsUTC = util.countIntervals(options["start"],options["end"],durationMin)
-    logging.info("  Required rows : "+str(timeStampsUTC["count"]))
-    logging.info("  Duration : "+str(durationMin))
-    start_time = data1.index.min()
-    end_time = data1.index.max()
-    expected_timestamps = pd.date_range(start=start_time, end=end_time, freq=f"{durationMin}T")
-    expected_df = pd.DataFrame(index=expected_timestamps)
-    missing_indices = expected_df.index.difference(data1.index)
-    logging.info("  Missing values:"+str(missing_indices))
-    for index in missing_indices:
-      logging.info("    Missing value: "+str(index))
-      rows_same_day = data1[ data1.index.date == index.date()]
-      avg_val = rows_same_day.mean().fillna(0).round().astype(int)
-      logging.info("      replaced with day average value of "+str(rows_same_day.index[0].date())+" : "+' '.join(avg_val.astype(str)))
-      new_row = pd.DataFrame([avg_val], columns=data1.columns, index=[index])
-      data1 = pd.concat([data1, new_row])            
-      # prev_index = index - dur
-      # next_index = index + dur
-      # avg_val = (data1.loc[prev_index]+data1.loc[next_index])/2
-      # logging.info("      previous value: " + ' '.join(data1.loc[prev_index].astype(str)))
-      # logging.info("      previous value: " + ' '.join(data1.loc[next_index].astype(str)))
-      # logging.info("      average value: " + ' '.join(avg_val.astype(str)))
-      # new_row = pd.DataFrame([avg_val], columns=data1.columns, index=[index])
-      # data1 = pd.concat([data1, new_row])
-    data1.sort_index(inplace=True)
     
-    data1["startTime"] = timeStampsUTC["startBin"]
-    data1["endTime"] = timeStampsUTC["endBin"]
+    refinedData  = refineData(options,data1)
 
     if DEBUG:   
       fileName= options["country"]+"-"+options["start"]+"-"+options["end"]+"-"+str(durationMin)+'-actual-raw'
-      data1.to_csv("./test/"+fileName+".csv")
+      refinedData.to_csv("./test/"+fileName+".csv")
     
-    data1 = data1.reset_index(drop=True)
-    return {"data":data1,"duration":durationMin}
+    refinedData = refinedData.reset_index(drop=True)
+    return {"data":refinedData,"duration":durationMin}
 
 
 def entsoe_getDayAheadAggregatedGeneration(options={"country": "", "start": "", "end": ""}):
@@ -74,58 +79,43 @@ def entsoe_getDayAheadAggregatedGeneration(options={"country": "", "start": "", 
     data = client.query_generation_forecast(options["country"], start=pd.Timestamp(options["start"], tz='UTC'), end=pd.Timestamp(options["end"], tz='UTC'))
     if isinstance(data,pd.Series):
         data = data.to_frame(name="Actual Aggregated")
-    
-    data['startTimeIndex'] = data.index.strftime('%Y%m%d%H%M')
-    data['startTimeIndex'] = pd.to_datetime(data['startTimeIndex'])
-
-    duration = data['startTimeIndex'].iloc[1] - data['startTimeIndex'].iloc[0]
-    durationMin = duration.seconds // 60
+    durationMin = (data.index[1] - data.index[0]).total_seconds() / 60
     timeStampsUTC = util.countIntervals(options["start"],options["end"],durationMin)    
     data = data.head(timeStampsUTC["count"])
-    data["startTime"] = timeStampsUTC["startBin"]
-    data["endTime"] = timeStampsUTC["endBin"]
-    
+    refinedData = refineData(options,data)
     newCol = {'Actual Aggregated': 'total'}
-    data.rename(columns=newCol, inplace=True)
+    refinedData.rename(columns=newCol, inplace=True)
 
     if DEBUG:   
       fileName= options["country"]+"-"+options["start"]+"-"+options["end"]+"-"+str(durationMin)+'-forecast-total-raw'
-      data.to_csv("./test/"+fileName+".csv")
+      refinedData.to_csv("./test/"+fileName+".csv")
     
-    data = data.reset_index(drop=True)
-
-    return {"data":data,"duration":durationMin}
+    refinedData = refinedData.reset_index(drop=True)
+    return {"data":refinedData,"duration":durationMin}
 
 
 def entsoe_getDayAheadGenerationForecastsWindSolar(options={"country": "", "start": "", "end": ""}):
     client = entsoePandas(api_key=getAPIToken())
     data = client.query_wind_and_solar_forecast(options["country"],  start=pd.Timestamp(options["start"], tz='UTC'), end=pd.Timestamp(options["end"], tz='UTC'))
 
-    data['startTimeIndex'] = data.index.strftime('%Y%m%d%H%M')
-    data['startTimeIndex'] = pd.to_datetime(data['startTimeIndex'])    
-
-    duration = data['startTimeIndex'].iloc[1] - data['startTimeIndex'].iloc[0]
-    durationMin = duration.seconds // 60
-
+    durationMin = (data.index[1] - data.index[0]).total_seconds() / 60
     timeStampsUTC = util.countIntervals(options["start"],options["end"],durationMin)
     data = data.head(timeStampsUTC["count"])
-    data["startTime"] = timeStampsUTC["startBin"]
-    data["endTime"] = timeStampsUTC["endBin"]
-
+    refinedData = refineData(options,data) 
     validCols = ["Solar","Wind Offshore","Wind Onshore"]
     existingCol = []
     for col in validCols:
-        if col in data.columns:
+        if col in refinedData.columns:
             existingCol.append(col)
-    data["totalRenewable"] = data[existingCol].sum(axis=1)
+    refinedData["totalRenewable"] = refinedData[existingCol].sum(axis=1)
     
-    data = data.reset_index(drop=True)
+    refinedData = data.reset_index(drop=True)
 
     if DEBUG:   
       fileName= options["country"]+"-"+options["start"]+"-"+options["end"]+"-"+str(durationMin)+'-forecast-wind-solar-raw'
-      data.to_csv("./test/"+fileName+".csv")
+      refinedData.to_csv("./test/"+fileName+".csv")
 
-    return {"data":data,"duration":durationMin}
+    return {"data":refinedData,"duration":durationMin}
 
 
 def getActualRenewableValues(options={"country":"","start":"","end":"", "interval60":True}):
