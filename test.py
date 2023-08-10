@@ -77,3 +77,9 @@ def checkValueFrance2022():
 
 # data = e.entsoe_getActualGenerationDataPerProductionType({"country":"FR","start":"202204150000","end":"202204170000"})
 # print(data)
+
+# data = e.entsoe_getDayAheadAggregatedGeneration({"start":"202305010000","end":"202305150000","country":"FR","interval60":False})
+# print(data)
+
+# data1 = e.entsoe_getDayAheadGenerationForecastsWindSolar({"start":"202305010000","end":"202305150000","country":"FR","interval60":False})
+# print(data1)

@@ -75,6 +75,7 @@ def entsoe_getActualGenerationDataPerProductionType(options={"country": "", "sta
 
 
 def entsoe_getDayAheadAggregatedGeneration(options={"country": "", "start": "", "end": ""}):
+    logging.info(options)
     client = entsoePandas(api_key=getAPIToken())
     data = client.query_generation_forecast(options["country"], start=pd.Timestamp(options["start"], tz='UTC'), end=pd.Timestamp(options["end"], tz='UTC'))
     if isinstance(data,pd.Series):
@@ -95,6 +96,7 @@ def entsoe_getDayAheadAggregatedGeneration(options={"country": "", "start": "", 
 
 
 def entsoe_getDayAheadGenerationForecastsWindSolar(options={"country": "", "start": "", "end": ""}):
+    logging.info(options)
     client = entsoePandas(api_key=getAPIToken())
     data = client.query_wind_and_solar_forecast(options["country"],  start=pd.Timestamp(options["start"], tz='UTC'), end=pd.Timestamp(options["end"], tz='UTC'))
 

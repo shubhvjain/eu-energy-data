@@ -53,6 +53,7 @@ File name format : "countryname-startDate-endData-interval-type.csv" (type is ei
 def getCountryList():
     compList1 = ["DE","FR", "BE","BG","HR","CZ","DK","EE","FI","GR","HU","IT","XK",]
     compList2 = ["LV","LT","LU","ME","NL","MK","NO","PL","PT","RO","SK","SI","ES","SE","CH"]
+    l15=["DE","HU","NL","LU"]
     return compList2
 
 def generateIntialFileName(options,type):
@@ -67,7 +68,7 @@ def saveHistoricalActualData(options):
         data = e.getActualRenewableValues(options)
         end_time = time.time()
         time_taken = end_time - start_time
-        fname = fname+"-"+str(data["duration"])
+        fname = fname+"-"+str(int(data["duration"]))
         logging.info("[Stop] Getting : "+ fname+" ; Took : "+str(round(time_taken,2))+" s")
         data["data"].to_csv("./rawData/"+fname+".csv")
     except Exception as error :
@@ -81,7 +82,7 @@ def saveHistoricalForecastData(options):
         data = e.getRenewableForecast(options)
         end_time = time.time()
         time_taken = end_time - start_time
-        fname = fname+"-"+str(data["duration"])
+        fname = fname+"-"+str(int(data["duration"]))
         logging.info("[Stop] Getting : "+ fname+" ; Took : "+str(round(time_taken,2))+" s")
         data["data"].to_csv("./rawData/"+fname+".csv")
     except Exception as error :
@@ -94,26 +95,28 @@ def saveHistoricalForecastData(options):
 # saveHistoricalActualData({"start":"202201010000","end":"202301010000","country":"FR","interval60":True})
 # saveHistoricalActualData({"start":"202204010000","end":"202204200000","country":"FR","interval60":True})
 # saveHistoricalActualData({"start":"202206010000","end":"202306010000","country":"NL","interval60":True})
+# saveHistoricalActualData({"start":"202305010000","end":"202308010000","country":"NL","interval60":True})
+# saveHistoricalActualData({"start":"202305010000","end":"202308010000","country":"NL","interval60":False})
+# print(e.getRenewableForecast({"start":"202305010000","end":"202305010000","country":"DE","interval60":False}))
+# saveHistoricalForecastData({"start":"202102200000","end":"202102250000","country":"FR","interval60":False})
 
 def getActualDataForAllCountries():
     cont = getCountryList()
     for c in cont :
         print(c)
         saveHistoricalActualData({"start":"202001010000","end":"202301010000","country":c,"interval60":True})
-        #saveHistoricalActualData({"start":"202001010000","end":"202306300000","country":c,"interval60":True})
+        #saveHistoricalActualData({"start":"202001010000","end":"202301010000","country":c,"interval60":False})
         print("====done====")
 
 # getActualDataForAllCountries()
-
 
 def getForecastDataForAllCountries():
     cont = getCountryList()
     for c in cont :
         print(c)
-        saveHistoricalActualData({"start":"202001010000","end":"202301010000","country":c,"interval60":True})
-        #saveHistoricalActualData({"start":"202001010000","end":"202306300000","country":c,"interval60":True})
+        saveHistoricalForecastData({"start":"202001010000","end":"202301010000","country":c})
         print("====done====")
 
-# getActualDataForAllCountries()
+# getForecastDataForAllCountries()
 
-# saveHistoricalActualData({"start":"202206010000","end":"202306010000","country":"NL","interval60":True})
+
