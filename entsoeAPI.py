@@ -3,12 +3,51 @@ from datetime import datetime, timedelta
 import time
 from entsoe import EntsoePandasClient as entsoePandas
 import os
-import util 
 
 import logging
-logging.basicConfig(filename='entsoe.log', format='%(asctime)s - %(levelname)s - %(message)s',level="INFO")
+logging.basicConfig(filename='entsoe3.log', format='%(asctime)s - %(levelname)s - %(message)s',level="INFO")
 
 DEBUG=True
+
+def util_countIntervals(startDate, endDate, intervalMinutes):
+    startDatetime = datetime.strptime(startDate, "%Y%m%d%H%M")
+    endDatetime = datetime.strptime(endDate, "%Y%m%d%H%M")
+    interval = timedelta(minutes=intervalMinutes)
+    startBin = []
+    endBin = []
+    count = 0
+    while startDatetime < endDatetime:
+        a = startDatetime.strftime("%Y%m%d%H%M")
+        count += 1
+        startDatetime += interval
+        b = startDatetime.strftime("%Y%m%d%H%M")
+        startBin.append(a)
+        endBin.append(b)
+    return {"count":count,"startBin":startBin,"endBin":endBin}
+
+
+def util_convertTo60MinInterval(rawData, start, end):
+    duration = rawData["duration"]
+    if duration == 60:
+        """ If the duration is already 60, return data """
+        return rawData["data"]
+    elif duration < 60:
+        """
+        First, we determine the number of rows needed to combine in order to obtain data in a 60-minute format. 
+        It is important to note that the rows are combined by taking the average of the row data, rather than the sum.
+        """
+        # determing how many rows need to be combined to get data in 60 min format. The rows are com
+        groupingFactor = int(60/duration)
+        oldData = rawData["data"]
+        dataColToRemove = ['startTime', 'endTime']
+        oldData = oldData.drop(dataColToRemove, axis=1)
+        oldData['group_id'] = oldData.index // groupingFactor
+        newGroupedData = oldData.groupby('group_id').mean()
+        timeUTCInterval = util_countIntervals(start, end, 60)
+        newGroupedData["startTime"] = timeUTCInterval["startBin"]
+        newGroupedData["endTime"] = timeUTCInterval["endBin"]
+        return newGroupedData
+
 
 def getAPIToken():
   variable_name = "ENTSOE_TOKEN"
@@ -19,7 +58,7 @@ def getAPIToken():
 
 def refineData(options,data1):
   durationMin = (data1.index[1] - data1.index[0]).total_seconds() / 60
-  timeStampsUTC = util.countIntervals(options["start"],options["end"],durationMin)
+  timeStampsUTC = util_countIntervals(options["start"],options["end"],durationMin)
 
   logging.info("  Row count : Fetched =  "+str(len(data1))+" , Required = "+str(timeStampsUTC["count"]))
   logging.info("  Duration : "+str(durationMin))
@@ -29,7 +68,7 @@ def refineData(options,data1):
   expected_timestamps = pd.date_range(start=start_time, end=end_time, freq=f"{durationMin}T")
   expected_df = pd.DataFrame(index=expected_timestamps)
   missing_indices = expected_df.index.difference(data1.index)
-  logging.info("  Missing values:"+str(missing_indices))
+  logging.info("  Missing values ("+str(len(missing_indices))+"):"+str(missing_indices))
   for index in missing_indices:
     logging.info("    Missing value: "+str(index))
     rows_same_day = data1[ data1.index.date == index.date()]
@@ -81,7 +120,7 @@ def entsoe_getDayAheadAggregatedGeneration(options={"country": "", "start": "", 
     if isinstance(data,pd.Series):
         data = data.to_frame(name="Actual Aggregated")
     durationMin = (data.index[1] - data.index[0]).total_seconds() / 60
-    timeStampsUTC = util.countIntervals(options["start"],options["end"],durationMin)    
+    timeStampsUTC = util_countIntervals(options["start"],options["end"],durationMin)    
     data = data.head(timeStampsUTC["count"])
     refinedData = refineData(options,data)
     newCol = {'Actual Aggregated': 'total'}
@@ -101,7 +140,7 @@ def entsoe_getDayAheadGenerationForecastsWindSolar(options={"country": "", "star
     data = client.query_wind_and_solar_forecast(options["country"],  start=pd.Timestamp(options["start"], tz='UTC'), end=pd.Timestamp(options["end"], tz='UTC'))
 
     durationMin = (data.index[1] - data.index[0]).total_seconds() / 60
-    timeStampsUTC = util.countIntervals(options["start"],options["end"],durationMin)
+    timeStampsUTC = util_countIntervals(options["start"],options["end"],durationMin)
     data = data.head(timeStampsUTC["count"])
     refinedData = refineData(options,data) 
     validCols = ["Solar","Wind Offshore","Wind Onshore"]
@@ -126,7 +165,7 @@ def getActualRenewableValues(options={"country":"","start":"","end":"", "interva
     duration = totalRaw["duration"]
     if options["interval60"] == True and totalRaw["duration"] != 60.0 :
       print("Data will to be converted to 60 min interval")
-      table = util.convertTo60MinInterval(totalRaw,options["start"],options["end"])
+      table = util_convertTo60MinInterval(totalRaw,options["start"],options["end"])
       duration = 60
     else: 
       table = total 
@@ -154,13 +193,13 @@ def getRenewableForecast(options={"country": "", "start": "", "end": "" }):
     # print(options)
     totalRaw = entsoe_getDayAheadAggregatedGeneration(options)
     if totalRaw["duration"] != 60 :
-        total = util.convertTo60MinInterval(totalRaw,options["start"],options["end"])
+        total = util_convertTo60MinInterval(totalRaw,options["start"],options["end"])
     else :
         total = totalRaw["data"]
     
     windsolarRaw = entsoe_getDayAheadGenerationForecastsWindSolar(options)
     if  windsolarRaw["duration"] != 60 :
-        windsolar = util.convertTo60MinInterval(windsolarRaw,options["start"],options["end"])
+        windsolar = util_convertTo60MinInterval(windsolarRaw,options["start"],options["end"])
     else :
         windsolar = windsolarRaw["data"]   
   
