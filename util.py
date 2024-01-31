@@ -31,6 +31,23 @@ EU_country_codes = [
     "SI",  # Slovenia
     "SK",  # Slovakia
 ]
+renewableSources = ["Biomass","Geothermal", "Hydro Pumped Storage", "Hydro Run-of-river and poundage",
+                        "Hydro Water Reservoir", "Marine", "Other renewable", "Solar", "Waste", "Wind Offshore", "Wind Onshore"]
+windSolarOnly = ["Solar", "Wind Offshore", "Wind Onshore"]
+nonRenewableSources = [ "Fossil Brown coal/Lignite", "Fossil Coal-derived gas", "Fossil Gas",
+                           "Fossil Hard coal", "Fossil Oil", "Fossil Oil shale", "Fossil Peal", "Nuclear", "Other"]
+
+
+energy_type = {
+    "Wind":["Wind Offshore", "Wind Onshore"],
+    "Solar":["Solar"],
+    "Nuclear": ["Nuclear"],
+    "Hydroelectricity":[ "Hydro Pumped Storage", "Hydro Run-of-river and poundage", "Hydro Water Reservoir"],
+    "Geothermal":["Geothermal"],
+    "Natural Gas": ["Fossil Coal-derived gas", "Fossil Gas"],
+    "Petroleum":["Fossil Oil", "Fossil Oil shale"],
+    "Coal":["Fossil Brown coal/Lignite","Fossil Hard coal","Fossil Peal"]
+}
 
 DATA_folder_location= "data"
 
@@ -89,3 +106,50 @@ def read_actual_data_file(ccode):
   currentData['startTime'] = currentData['startTime'].dt.strftime('%Y%m%d%H%M')
   currentData['endTime'] = currentData['endTime'].dt.strftime('%Y%m%d%H%M')
   return currentData
+
+
+def calculate_energy_values(table):
+    """
+    """
+    colsToDel = ["renewableTotal","renewableTotalWS","nonRenewableTotal","total","percentRenewable","percentRenewableWS"]
+    allAddkeys = ["Wind","Solar","Nuclear","Hydroelectricity","Geothermal","Natural Gas","Petroleum","Coal"]
+    for a in allAddkeys:
+        colsToDel.append(a+"_per")
+    for c in colsToDel:
+        if c in table.columns:
+            del table[c]
+
+    allCols = table.columns.tolist()
+    # find out which columns are present in the data out of all the possible columns in both the categories
+    renPresent = list(set(allCols).intersection(renewableSources))
+    renPresentWS = list(set(allCols).intersection(windSolarOnly))
+    nonRenPresent = list(set(allCols).intersection(nonRenewableSources))
+    # find total renewable, total non renewable and total energy values
+    table["renewableTotal"] = table[renPresent].sum(axis=1)
+    table["renewableTotalWS"] = table[renPresentWS].sum(axis=1)
+    table["nonRenewableTotal"] = table[nonRenPresent].sum(axis=1)
+    table["total"] = table["nonRenewableTotal"] + table["renewableTotal"]
+    # calculate percent renewable
+    table["percentRenewable"] = (
+        table["renewableTotal"] / table["total"]) * 100
+    # refine percentage values : replacing missing values with 0 and converting to integer
+    table['percentRenewable'].fillna(0, inplace=True)
+    table["percentRenewable"] = table["percentRenewable"].round().astype(int)
+    table["percentRenewableWS"] = (
+        table["renewableTotalWS"] / table["total"]) * 100
+    table['percentRenewableWS'].fillna(0, inplace=True)
+    table["percentRenewableWS"] = table["percentRenewableWS"].round().astype(int)
+
+    # individual energy source percentage calculation 
+
+    # energy_type_available = {}
+    for ky in allAddkeys:
+        keys_available =  list(set(allCols).intersection(energy_type[ky]))   
+        #print(keys_available)  
+        fieldName = ky+"_per"  
+        table[fieldName] = table[keys_available].sum(axis=1)
+        table[fieldName].fillna(0, inplace=True)
+        table[fieldName] = (table[fieldName]/table["total"])*100
+        table[fieldName] =  table[fieldName].astype(int)
+    
+    return table

@@ -214,9 +214,9 @@ def get_actual_percent_renewable(country, start, end, interval60=False) -> pd.Da
     # print(totalRaw["refine_logs"])
     # finding the percent renewable
     renewableSources = ["Geothermal", "Hydro Pumped Storage", "Hydro Run-of-river and poundage",
-                        "Hydro Water Reservoir", "Marine", "Other renewable", "Solar", "Waste", "Wind Offshore", "Wind Onshore"]
+                        "Hydro Water Reservoir", "Marine", "Other renewable", "Solar", "Waste", "Wind Offshore", "Wind Onshore","Biomass"]
     windSolarOnly = ["Solar", "Wind Offshore", "Wind Onshore"]
-    nonRenewableSources = ["Biomass", "Fossil Brown coal/Lignite", "Fossil Coal-derived gas", "Fossil Gas",
+    nonRenewableSources = ["Fossil Brown coal/Lignite", "Fossil Coal-derived gas", "Fossil Gas",
                            "Fossil Hard coal", "Fossil Oil", "Fossil Oil shale", "Fossil Peal", "Nuclear", "Other"]
     allCols = table.columns.tolist()
     # find out which columns are present in the data out of all the possible columns in both the categories

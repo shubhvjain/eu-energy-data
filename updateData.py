@@ -1,7 +1,7 @@
 import util as ut
 import entsoeAPI as e
 import pandas as pd
-
+import carbonIntensity as ci
 def updateData():
   """
   1. get a list of countries for which data is available (actual, forecast)
@@ -54,5 +54,45 @@ def updateForecastDataForCountry(cname):
   print(file)  
 
 
-updateData()
+# updateData()
 # updateActualDataForCountry("BE")
+
+def reCalculateEnergyValue(cname):
+  file = ut.DATA_folder_location+"/"+cname+"-actual-60.csv"
+  # print("dsdsd")
+  currentData = ut.read_actual_data_file(cname)
+  print(currentData)
+  # recalcuate percentage 
+  currentData1 = ut.calculate_energy_values(currentData)
+
+  currentData1.to_csv(file)
+
+# reCalculateEnergyValue("DE")
+def reCalcAll():
+  a,f = ut.get_available_country_list()
+  for ca in a:
+    try:
+      print(ca)
+      reCalculateEnergyValue(ca)  
+      print("done---")
+    except Exception as e:
+      print(e)
+
+
+reCalcAll()
+
+
+def addCarbonIntensityValueToData(cname):
+  print(1)
+
+
+
+def updateAdditionalFields():
+  """
+  to add new fields to existing data frame and saving them in the csv file
+  """
+  a,f = ut.get_available_country_list()
+  for ca in a:
+    addCarbonIntensityValueToData(ca)
+
+
