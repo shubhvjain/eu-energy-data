@@ -54,39 +54,5 @@ def updateForecastDataForCountry(cname):
   print(file)  
 
 
-# updateData()
-
-
-updateActualDataForCountry("BE")
-
-
-
-def saveHistoricalActualData(options):
-    fname = generateIntialFileName(options,"actual")
-    try: 
-        data = e.get_actual_percent_renewable(options["country"],options["start"],options["end"],options["interval60"]) 
-        data.to_csv("./test/raw-"+fname+".csv")
-    except Exception as error :
-        print(error)
-
-def saveHistoricalForecastData(options):
-    fname = generateIntialFileName(options,"forecast")
-    try: 
-        data = e.get_forecast_percent_renewable(options["country"],options["start"],options["end"])
-        data.to_csv("./test/"+fname+".csv")
-    except Exception as error :
-        print(error)
-
-
-def getTestData():
-    cont = getCountryList()
-    for c in cont :
-        print(c)
-        saveHistoricalActualData({"start":"202301010000","end":"202301070000","country":c,"interval60":False})
-        saveHistoricalForecastData({"start":"202301010000","end":"202301070000","country":c})
-        print("====done====")
-
-# getActualDataForAllCountries()
-# getTestData()
-        
-
+updateData()
+# updateActualDataForCountry("BE")
