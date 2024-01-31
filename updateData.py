@@ -67,7 +67,7 @@ def reCalculateEnergyValue(cname):
 
   currentData1.to_csv(file)
 
-# reCalculateEnergyValue("DE")
+# reCalculateEnergyValue("LU")
 def reCalcAll():
   a,f = ut.get_available_country_list()
   for ca in a:

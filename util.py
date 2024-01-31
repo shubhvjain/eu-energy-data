@@ -147,9 +147,10 @@ def calculate_energy_values(table):
         keys_available =  list(set(allCols).intersection(energy_type[ky]))   
         #print(keys_available)  
         fieldName = ky+"_per"  
+        # print(fieldName)
         table[fieldName] = table[keys_available].sum(axis=1)
-        table[fieldName].fillna(0, inplace=True)
         table[fieldName] = (table[fieldName]/table["total"])*100
+        table[fieldName].fillna(0, inplace=True)
+        # print(table[fieldName])        
         table[fieldName] =  table[fieldName].astype(int)
-    
     return table
