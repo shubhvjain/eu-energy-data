@@ -3,16 +3,21 @@ from datetime import datetime, timedelta
 import time
 from entsoe import EntsoePandasClient as entsoePandas
 import os
-
+from dotenv import dotenv_values
 
 def get_API_token() -> str:
     """Returns the token required to access the ENTSOE API. The token is stored as environment variable `ENTSOE_TOKEN`"""
+    env_vars = dotenv_values('.env')
     variable_name = "ENTSOE_TOKEN"
-    value = os.environ.get(variable_name)
-    if value is None:
-        raise ValueError(
-            f"The required environment variable '{variable_name}' is not set.")
-    return value
+    if variable_name in env_vars:
+        variable_value = env_vars[variable_name]
+        return variable_value
+    else:
+        value = os.environ.get(variable_name)
+        if value is None:
+            raise ValueError(
+                f"The required environment variable '{variable_name}' is not set.")
+        return value
 
 
 def refine_data(options, data1):
@@ -209,9 +214,9 @@ def get_actual_percent_renewable(country, start, end, interval60=False) -> pd.Da
     # print(totalRaw["refine_logs"])
     # finding the percent renewable
     renewableSources = ["Geothermal", "Hydro Pumped Storage", "Hydro Run-of-river and poundage",
-                        "Hydro Water Reservoir", "Marine", "Other renewable", "Solar", "Waste", "Wind Offshore", "Wind Onshore"]
+                        "Hydro Water Reservoir", "Marine", "Other renewable", "Solar", "Waste", "Wind Offshore", "Wind Onshore","Biomass"]
     windSolarOnly = ["Solar", "Wind Offshore", "Wind Onshore"]
-    nonRenewableSources = ["Biomass", "Fossil Brown coal/Lignite", "Fossil Coal-derived gas", "Fossil Gas",
+    nonRenewableSources = ["Fossil Brown coal/Lignite", "Fossil Coal-derived gas", "Fossil Gas",
                            "Fossil Hard coal", "Fossil Oil", "Fossil Oil shale", "Fossil Peal", "Nuclear", "Other"]
     allCols = table.columns.tolist()
     # find out which columns are present in the data out of all the possible columns in both the categories
@@ -233,6 +238,7 @@ def get_actual_percent_renewable(country, start, end, interval60=False) -> pd.Da
         table["renewableTotalWS"] / table["total"]) * 100
     table['percentRenewableWS'].fillna(0, inplace=True)
     table["percentRenewableWS"] = table["percentRenewableWS"].round().astype(int)
+    # print(table.columns.tolist())
     return table
 
 

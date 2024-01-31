@@ -4,11 +4,7 @@ import datetime
 import time
 # import logging
 # logging.basicConfig(filename='app.log', format='%(name)s - %(levelname)s - %(message)s',level="INFO")
-
-def optionToFile(opt):
-    f = opt["country"]+"-"+opt["start"]+"-"+opt["end"]
-    return f
-    
+# TODO this code requires some changes to save files in data folder check updateDate.py
 
 def getCountryList():
     compList1 = ["DE","FR", "BE","BG","HR","CZ","DK","EE","FI","GR","HU","IT","XK",]
@@ -17,7 +13,7 @@ def getCountryList():
     return compList1 + compList2
 
 def generateIntialFileName(options,type):
-    f = options["country"]+"-"+options["start"]+"-"+options["end"]+"-"+type
+    f = options["country"]+"-"+type
     return f
 
 def saveHistoricalActualData(options):
@@ -46,7 +42,6 @@ def getTestData():
         print("====done====")
 
 # getActualDataForAllCountries()
+# getTestData()
+        
 
-
-
-getTestData()
