@@ -17,7 +17,7 @@ def method_codecarbon1(row):
     result = (base_carbon_intensity["Coal"] * row["Coal_per"]
         + base_carbon_intensity["Geothermal"] * row["Geothermal_per"]
         + base_carbon_intensity["Hydroelectricity"] * row["Hydroelectricity_per"]
-        + base_carbon_intensity["Natural Gas"] * row["Natural Gas"]
+        + base_carbon_intensity["Natural Gas"] * row["Natural Gas_per"]
         + base_carbon_intensity["Nuclear"] * row["Nuclear_per"]
         + base_carbon_intensity["Petroleum"] * row["Petroleum_per"]
         + base_carbon_intensity["Solar"] * row["Solar_per"]

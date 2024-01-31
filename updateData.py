@@ -48,11 +48,9 @@ def updateActualDataForCountry(cname):
   else:
      print("latest data... check tomorrow ")
 
-
 def updateForecastDataForCountry(cname):
   file = ut.DATA_folder_location+"/"+cname+"-forecast-60.csv"
   print(file)  
-
 
 # updateData()
 # updateActualDataForCountry("BE")
@@ -64,7 +62,6 @@ def reCalculateEnergyValue(cname):
   print(currentData)
   # recalcuate percentage 
   currentData1 = ut.calculate_energy_values(currentData)
-
   currentData1.to_csv(file)
 
 # reCalculateEnergyValue("LU")
@@ -79,13 +76,18 @@ def reCalcAll():
       print(e)
 
 
-reCalcAll()
-
-
+# reCalcAll()
 def addCarbonIntensityValueToData(cname):
-  print(1)
+  #print(1)
+  file = ut.DATA_folder_location+"/"+cname+"-actual-60.csv"
+  currentData = ut.read_actual_data_file(cname)
+  # re-calculate percentage 
+  currentData["ci1_kgCO2perkWh"] =  currentData.apply(lambda row: ci.calculate_carbon_intensity(row,"codecarbon1"), axis=1)
+  currentData.to_csv(file)
 
 
+
+# addCarbonIntensityValueToData("DE")
 
 def updateAdditionalFields():
   """
@@ -96,3 +98,4 @@ def updateAdditionalFields():
     addCarbonIntensityValueToData(ca)
 
 
+updateAdditionalFields()
