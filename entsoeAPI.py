@@ -238,7 +238,7 @@ def get_actual_percent_renewable(country, start, end, interval60=False) -> pd.Da
         table["renewableTotalWS"] / table["total"]) * 100
     table['percentRenewableWS'].fillna(0, inplace=True)
     table["percentRenewableWS"] = table["percentRenewableWS"].round().astype(int)
-    print(table.columns.tolist())
+    # print(table.columns.tolist())
     return table
 
 
