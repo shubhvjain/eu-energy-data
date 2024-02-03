@@ -98,4 +98,4 @@ def updateAdditionalFields():
     addCarbonIntensityValueToData(ca)
 
 
-updateAdditionalFields()
+# updateAdditionalFields()
