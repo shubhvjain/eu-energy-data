@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Data Visualization</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" />
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  <style>
+    /* Custom CSS for responsive navbar */
+    .navbar-brand {
+      margin-right: auto;
+    }
+
+    .navbar-nav .nav-item {
+      margin-left: 10px;
+    }
+
+    @media (max-width: 767px) {
+      .navbar-nav .nav-item {
+        margin-left: 0;
+        margin-top: 5px;
+      }
+    }
+
+    #chart1 {
+      width: 100vw;
+      height: 70vh;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app" class="container-fluid">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <a class="navbar-brand" href="#">Data Visualization</a>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item">
+            <select id="countrySelect" class="form-control" v-model="selectedCountry">
+              <option v-for="country in countries" :value="country">
+                {{ country }}
+              </option>
+            </select>
+          </li>
+          <li class="nav-item">
+            <button class="btn btn-primary ml-2" @click="displayData" :disabled="selectedCountry === ''">
+              Display
+            </button>
+          </li>
+        </ul>
+      </div>
+    </nav>
+    <div class="row">
+      <div class="col-lg-12">
+        <p v-if="loading">Loading data...</p>
+        <p class="text-danger text-center p-2 m-2" v-if="!loading && !dataLoaded && selectedCountry">
+          Failed to load data. Please try again. Or you have selected the
+          country but not clicked on the "Display" button.
+        </p>
+        <p class="text-dark text-center p-2 m-2" v-if="!loading && !dataLoaded && !selectedCountry">
+          Select a country to begin
+        </p>
+        <div id="charts" v-if="dataLoaded"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Vue.js -->
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+  <script>
+    // Global variable
+    var serverURL = "/eu-energy-data";
+
+    new Vue({
+      el: "#app",
+      data: {
+        selectedCountry: "",
+        countries: [],
+        jsonArray: [],
+        loading: false,
+        dataLoaded: false,
+      },
+      methods: {
+        initChartDiv() {
+          document.getElementById("charts").innerHTML = `
+            <div id="intro"></div>
+            <div id="chart1"></div>
+            <div id="chart2"></div>
+            <div id="chart3"></div>
+            <div id="chart4"></div>
+            `;
+        },
+
+        displayData() {
+          if (this.selectedCountry !== "") {
+            this.fetchAndDisplay();
+          }
+        },
+        fetchAndDisplay() {
+          const csvUrl = `${serverURL}/data/${this.selectedCountry}-actual-60.csv`;
+          this.loading = true;
+          this.dataLoaded = false;
+          // Clear previous data
+          this.jsonArray = [];
+
+          fetch(csvUrl)
+            .then((response) => response.text())
+            .then((csvData) => {
+              // Split CSV data by lines
+              const lines = csvData.trim().split(/\r?\n/);
+
+              // Get header row
+              const headers = lines[0].split(",");
+
+              // Initialize an array to store JSON objects
+              const jsonArray = [];
+
+              // Iterate over CSV rows (excluding the header)
+              for (let i = 1; i < lines.length; i++) {
+                // Split current row into values
+                const values = lines[i].split(",");
+
+                // Create JSON object for current row
+                const jsonObject = {};
+                // Map values to keys from header row
+                for (let j = 0; j < headers.length; j++) {
+                  jsonObject[headers[j]] = values[j];
+                }
+                // Push JSON object to array
+                jsonArray.push(jsonObject);
+              }
+
+              // Display JSON array (for testing purposes)
+              console.log(jsonArray);
+
+              // Set the new data to the component's property
+              this.jsonArray = jsonArray;
+              this.loading = false;
+
+              this.dataLoaded = true;
+
+              setTimeout(() => {
+                this.initChartDiv();
+                this.loadPlots();
+              }, 1000);
+
+              // Now you can use the jsonArray to display charts or perform further processing
+            })
+            .catch((error) => {
+              console.error("Error fetching CSV:", error);
+              this.loading = false;
+              this.dataLoaded = false;
+            });
+        },
+
+        loadPlots() {
+          let jsonData = this.jsonArray;
+          //var timestamps = jsonData.map(obj => obj.startTime);
+
+          document.getElementById("intro").innerHTML = `
+            <h1>${this.selectedCountry}</h1>
+            <hr>
+            
+            `;
+
+          function convertToISOFormat(dateTimeString) {
+            var year = dateTimeString.slice(0, 4);
+            var month = dateTimeString.slice(4, 6);
+            var day = dateTimeString.slice(6, 8);
+            var hours = dateTimeString.slice(8, 10);
+            var minutes = dateTimeString.slice(10, 12);
+            dt =
+              year +
+              "-" +
+              month +
+              "-" +
+              day +
+              "T" +
+              hours +
+              ":" +
+              minutes +
+              ":00";
+            return dt;
+          }
+
+          // Extract timestamps from JSON data and convert to ISO format
+          var timestamps = jsonData.map((obj) =>
+            convertToISOFormat(obj.startTime)
+          );
+          // Extract carbon intensity data from JSON data
+          var carbonIntensity = jsonData.map((obj) => obj.ci1_kgCO2perkWh);
+          var geothermalPer = jsonData.map(obj => obj.Geothermal_per);
+          var nuclearPer = jsonData.map(obj => obj.Nuclear_per);
+          var petroleumPer = jsonData.map(obj => obj.Petroleum_per);
+          var solarPer = jsonData.map((obj) => obj.Solar_per);
+          var windPer = jsonData.map((obj) => obj.Wind_per);
+          var coalPer = jsonData.map((obj) => obj.Coal_per);
+          var perRenewable = jsonData.map((obj) => obj.percentRenewable);
+          var ng = jsonData.map((obj) => obj["Natural Gas_per"]);
+          // Create trace for carbon intensity
+          var trace = {
+            x: timestamps,
+            y: carbonIntensity,
+            mode: "lines",
+            name: "Carbon Intensity (kg CO2 per kWh)",
+          };
+
+
+                 // Create traces for Solar_per, Wind_per, and Coal_per
+                 var traceGeothermal = {
+    x: timestamps,
+    y: geothermalPer,
+    mode: 'lines',
+    name: 'Geothermal (%)'
+  };
+
+  var traceNuclear = {
+    x: timestamps,
+    y: nuclearPer,
+    mode: 'lines',
+    name: 'Nuclear (%)'
+  };
+
+  var tracePetroleum = {
+    x: timestamps,
+    y: petroleumPer,
+    mode: 'lines',
+    name: 'Petroleum (%)'
+  };
+
+  var traceSolar = {
+            x: timestamps,
+            y: solarPer,
+            mode: "lines",
+            name: "Solar (%)",
+          };
+
+          var traceWind = {
+            x: timestamps,
+            y: windPer,
+            mode: "lines",
+            name: "Wind (%)",
+          };
+
+          var traceCoal = {
+            x: timestamps,
+            y: coalPer,
+            mode: "lines",
+            name: "Coal (%)",
+          };
+          var traceNg = {
+            x: timestamps,
+            y: ng,
+            mode: "lines",
+            name: "Coal (%)",
+          };
+          
+
+let group1 = [traceCoal,tracePetroleum,traceNg]
+let group2 = [traceSolar, traceWind,traceGeothermal,traceNuclear ];
+
+          // Define layout
+          var layout1 = {
+            title: "Carbon Intensity Over Time",
+            xaxis: {
+              title: "Time",
+              type: "date", // Set x-axis type to date
+              tickformat: "%Y-%m-%d", // Set date tick format
+            },
+            yaxis: {
+              title: "Carbon Intensity (kg CO2 per kWh)",
+            },
+          };
+
+          // Plot chart
+          Plotly.newPlot("chart1", [trace], layout1);
+
+          // Extract carbon intensity data from JSON data
+
+          // Create trace for carbon intensity
+          var trace2 = {
+            x: timestamps,
+            y: perRenewable,
+            mode: "lines",
+            name: "Percentage",
+          };
+
+          // Define layout
+          var layout2 = {
+            title: "Percentage of renewable energy source Over Time",
+            xaxis: {
+              title: "Time",
+              type: "date", // Set x-axis type to date
+              tickformat: "%Y-%m-%d", // Set date tick format
+            },
+            yaxis: {
+              title: "Percentage",
+            },
+          };
+
+          // Plot chart
+          Plotly.newPlot("chart2", [trace2], layout2);
+
+          // Extract data for Solar_per, Wind_per, and Coal_per from JSON data
+          
+
+          // Create traces for Solar_per, Wind_per, and Coal_per
+        
+          // Combine traces
+
+          // Define layout
+          var layout3 = {
+            title: "Percentage of Non renewable Energy Sources Over Time",
+            xaxis: {
+              title: "Time",
+              type: "date", // Set x-axis type to date
+              tickformat: "%Y-%m-%d %H:%M", // Set date tick format
+            },
+            yaxis: {
+              title: "Percentage (%)",
+            },
+          };
+
+          // Plot chart
+          Plotly.newPlot("chart3", group1, layout3);
+          // Extract data for Solar_per, Wind_per, and Coal_per from JSON data
+        
+
+          // Define layout
+          var layout4 = {
+            title: "Percentage of Renewable Energy Sources Over Time",
+            xaxis: {
+              title: "Time",
+              type: "date", // Set x-axis type to date
+              tickformat: "%Y-%m-%d %H:%M", // Set date tick format
+            },
+            yaxis: {
+              title: "Percentage (%)",
+            },
+          };
+
+          // Plot chart
+          Plotly.newPlot("chart4", group2, layout4);
+        },
+        fetchCountries() {
+          fetch(`${serverURL}/data/meta.json`)
+            .then((response) => response.json())
+            .then((data) => {
+              console.log(data);
+              this.countries = data.actual; // .map(item => item.actual);
+              // this.initChartDiv()
+            })
+            .catch((error) =>
+              console.error("Error fetching countries:", error)
+            );
+        },
+      },
+      created() {
+        this.fetchCountries();
+      },
+    });
+  </script>
+</body>
+
+</html>
