@@ -1,0 +1,8 @@
+{
+    "rmse_ci1_and_ci_electmap": 24.558365623792483,
+    "mae_ci1_and_ci_electmap": 20.189918949771688,
+    "rmse_per_renew_and_pre_renew_electmap": 4.735253884356685,
+    "mae_per_renew_and_pre_renew_electmap": 3.7419166666666666,
+    "update_date": "2024-02-08 14:01:49",
+    "country": "FI"
+}

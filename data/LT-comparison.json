@@ -1,0 +1,8 @@
+{
+    "rmse_ci1_and_ci_electmap": 131.52321129511608,
+    "mae_ci1_and_ci_electmap": 105.33944634703197,
+    "rmse_per_renew_and_pre_renew_electmap": 31.09223732545774,
+    "mae_per_renew_and_pre_renew_electmap": 27.652935312024354,
+    "update_date": "2024-02-08 14:01:49",
+    "country": "LT"
+}
