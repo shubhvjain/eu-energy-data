@@ -27,7 +27,23 @@
 
     #chart1 {
       width: 100vw;
-      height: 70vh;
+      height: 50vh;
+    }
+    #chart2 {
+      width: 100vw;
+      height: 50vh;
+    }
+    #chart3 {
+      width: 100vw;
+      height: 50vh;
+    }
+    #chart4 {
+      width: 100vw;
+      height: 50vh;
+    }
+    #chart5 {
+      width: 100vw;
+      height: 50vh;
     }
   </style>
 </head>
@@ -72,7 +88,12 @@
   <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
   <script>
     // Global variable
-    var serverURL = "/eu-energy-data";
+    // var baseUrl = window.location.origin;
+    var fullUrl = window.location.href;
+    // Remove the last part of the path
+    var baseUrl = fullUrl.substring(0, fullUrl.lastIndexOf('/'));
+    console.log(baseUrl)
+    var serverURL = baseUrl //"/eu-energy-data";
 
     new Vue({
       el: "#app",
@@ -91,6 +112,7 @@
             <div id="chart2"></div>
             <div id="chart3"></div>
             <div id="chart4"></div>
+            <div id="chart5"></div>
             `;
         },
 
@@ -261,7 +283,7 @@
 
 let group1 = [traceCoal,tracePetroleum,traceNg]
 let group2 = [traceSolar, traceWind,traceGeothermal,traceNuclear ];
-
+let group3 = [...group1,...group2]
           // Define layout
           var layout1 = {
             title: "Carbon Intensity Over Time",
@@ -344,6 +366,21 @@ let group2 = [traceSolar, traceWind,traceGeothermal,traceNuclear ];
 
           // Plot chart
           Plotly.newPlot("chart4", group2, layout4);
+
+          var layout5 = {
+            title: "Percentage of Major Energy Sources Over Time",
+            xaxis: {
+              title: "Time",
+              type: "date", // Set x-axis type to date
+              tickformat: "%Y-%m-%d %H:%M", // Set date tick format
+            },
+            yaxis: {
+              title: "Percentage (%)",
+            },
+          };
+
+          // Plot chart
+          Plotly.newPlot("chart5", group3, layout5);
         },
         fetchCountries() {
           fetch(`${serverURL}/data/meta.json`)
