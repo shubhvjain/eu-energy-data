@@ -34,7 +34,7 @@ def method_codecarbon1(row):
         + base_carbon_intensity["Petroleum"] * row["Petroleum_per"]
         + base_carbon_intensity["Solar"] * row["Solar_per"]
         + base_carbon_intensity["Wind"] * row["Wind_per"] )/100
-    return result
+    return round(result, 2)
 
 
 """
@@ -75,7 +75,7 @@ def method_ipcc_lifecycle_min(row):
         + min_carbon_intensity["Solar"] * row["Solar_per"]
         + min_carbon_intensity["Biomass"] * row["Biomass_per"] 
         + min_carbon_intensity["Wind"] * row["Wind_per"] )/100
-    return result
+    return round(result, 2)
 
 
 def method_ipcc_lifecycle_mean(row):
@@ -101,7 +101,7 @@ def method_ipcc_lifecycle_mean(row):
         + mean_carbon_intensity["Biomass"] * row["Biomass_per"] 
 
           )/100
-    return result
+    return round(result, 2)
 
 def method_ipcc_lifecycle_max(row):
     # https://www.ipcc.ch/site/assets/uploads/2018/02/ipcc_wg3_ar5_annex-iii.pdf#page=7 (using mean values)
@@ -126,7 +126,7 @@ def method_ipcc_lifecycle_max(row):
         + max_carbon_intensity["Biomass"] * row["Biomass_per"] 
 
         )/100
-    return result
+    return round(result, 2)
 
 def method_EU_paper(row):
     # based on N. Scarlat, M. Prussi, and M. Padella, ‘Quantification of the carbon intensity of electricity produced and used in Europe’, Applied Energy, vol. 305, p. 117901, Jan. 2022, doi: 10.1016/j.apenergy.2021.117901.
@@ -151,7 +151,7 @@ def method_EU_paper(row):
         + base_carbon_intensity["Petroleum"] * row["Petroleum_per"]
         + base_carbon_intensity["Solar"] * row["Solar_per"]
         + base_carbon_intensity["Wind"] * row["Wind_per"] )/100
-    return result
+    return round(result, 2) 
     
 
 def calculate_carbon_intensity(row, methodType):
