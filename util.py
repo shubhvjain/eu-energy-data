@@ -46,7 +46,8 @@ energy_type = {
     "Geothermal":["Geothermal"],
     "Natural Gas": ["Fossil Coal-derived gas", "Fossil Gas"],
     "Petroleum":["Fossil Oil", "Fossil Oil shale"],
-    "Coal":["Fossil Brown coal/Lignite","Fossil Hard coal","Fossil Peal"]
+    "Coal":["Fossil Brown coal/Lignite","Fossil Hard coal","Fossil Peal"],
+    "Biomass":["Biomass"]
 }
 
 DATA_folder_location= "data"
@@ -111,10 +112,12 @@ def read_actual_data_file(ccode):
 def calculate_energy_values(table):
     """
     """
-    colsToDel = ["renewableTotal","renewableTotalWS","nonRenewableTotal","total","percentRenewable","percentRenewableWS"]
-    allAddkeys = ["Wind","Solar","Nuclear","Hydroelectricity","Geothermal","Natural Gas","Petroleum","Coal"]
+    allAddkeys = ["Wind","Solar","Nuclear","Hydroelectricity","Geothermal","Natural Gas","Petroleum","Coal","Biomass"]
+    colsToDel = ["renewableTotal","renewableTotalWS","nonRenewableTotal","total","percentRenewable","percentRenewableWS","ci1_kgCO2perkWh"]
     for a in allAddkeys:
-        colsToDel.append(a+"_per")
+        fname = a+"_per"
+        if a not in table.columns:
+            colsToDel.append(fname)
     for c in colsToDel:
         if c in table.columns:
             del table[c]
