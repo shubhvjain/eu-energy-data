@@ -213,7 +213,9 @@
             convertToISOFormat(obj.startTime)
           );
           // Extract carbon intensity data from JSON data
-          var carbonIntensity = jsonData.map((obj) => obj.ci1_kgCO2perkWh);
+          var carbonIntensity = jsonData.map((obj) => obj.ci1);
+          var carbonIntensity1 = jsonData.map((obj) => obj.ci3);
+          var carbonIntensity3 = jsonData.map((obj) => obj.ci5);
           var geothermalPer = jsonData.map(obj => obj.Geothermal_per);
           var nuclearPer = jsonData.map(obj => obj.Nuclear_per);
           var petroleumPer = jsonData.map(obj => obj.Petroleum_per);
@@ -227,9 +229,21 @@
             x: timestamps,
             y: carbonIntensity,
             mode: "lines",
-            name: "Carbon Intensity (kg CO2 per kWh)",
+            name: "Carbon Intensity Codecarbon",
           };
 
+          var traceCI2 = {
+            x: timestamps,
+            y: carbonIntensity1,
+            mode: "lines",
+            name: "Carbon Intensity IPCC",
+          };
+          var traceCI3 = {
+            x: timestamps,
+            y: carbonIntensity3,
+            mode: "lines",
+            name: "Carbon Intensity EU",
+          };
 
                  // Create traces for Solar_per, Wind_per, and Coal_per
                  var traceGeothermal = {
@@ -298,7 +312,7 @@ let group3 = [...group1,...group2]
           };
 
           // Plot chart
-          Plotly.newPlot("chart1", [trace], layout1);
+          Plotly.newPlot("chart1", [trace,traceCI2,traceCI3], layout1);
 
           // Extract carbon intensity data from JSON data
 
