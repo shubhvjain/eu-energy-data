@@ -47,30 +47,47 @@ def get_combined_data(country):
 def make_comparisons(country):
     df = get_combined_data(country)
     comparison = {}
+
     # ci1 with elect map data
-    squared_diff_ci1 = (df['ci1_kgCO2perkWh'] - df['ci_electmap']) ** 2
+    squared_diff_ci1 = (df['ci1'] - df['ci_electmap']) ** 2
     mean_squared_diff_ci1 = np.mean(squared_diff_ci1)
     rmse_ci1 = np.sqrt(mean_squared_diff_ci1)
     comparison["rmse_ci1_and_ci_electmap_direct"] = rmse_ci1
-    
-    mae_ci1 = np.mean(np.abs(df['ci_electmap'] - df['ci1_kgCO2perkWh']))
+    mae_ci1 = np.mean(np.abs(df['ci_electmap'] - df['ci1']))
     comparison["mae_ci1_and_ci_electmap"] = mae_ci1
 
+    # ci3 with elect map
+    squared_diff_ci3 = (df['ci3'] - df['ci_electmap']) ** 2
+    mean_squared_diff_ci3 = np.mean(squared_diff_ci3)
+    rmse_ci3 = np.sqrt(mean_squared_diff_ci3)
+    comparison["rmse_ci3_and_ci_electmap_direct"] = rmse_ci3
+    mae_ci3 = np.mean(np.abs(df['ci_electmap'] - df['ci3']))
+    comparison["mae_ci3_and_ci_electmap"] = mae_ci3
+
+    # ci5 with elect map 
+    squared_diff_ci5 = (df['ci5'] - df['ci_electmap']) ** 2
+    mean_squared_diff_ci5 = np.mean(squared_diff_ci5)
+    rmse_ci5 = np.sqrt(mean_squared_diff_ci5)
+    comparison["rmse_ci5_and_ci_electmap_direct"] = rmse_ci5
+    mae_ci5 = np.mean(np.abs(df['ci_electmap'] - df['ci5']))
+    comparison["mae_ci5_and_ci_electmap"] = mae_ci5
+
+   # comparing percentage renewable values
     squared_diff_ci2 = (df['percentRenewable'] - df['Renewable Percentage']) ** 2
     mean_squared_diff_ci2 = np.mean(squared_diff_ci2)
     rmse_ci2 = np.sqrt(mean_squared_diff_ci2)
-    comparison["rmse_per_renew_and_pre_renew_electmap"] = rmse_ci2
-    
+    comparison["rmse_per_renew_and_pre_renew_electmap"] = rmse_ci2  
     mae_perre = np.mean(np.abs(df['Renewable Percentage'] - df['percentRenewable']))
     comparison["mae_per_renew_and_pre_renew_electmap"] = mae_perre
     
     comparison["update_date"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    
     # print(comparison)
     comparison["country"] = country
     with open('./data/'+country+'-comparison.json', 'w') as f:
         json.dump(comparison, f, indent=4)
     
 
-# for c in clist:
-#    make_comparisons(c)
+for c in clist:
+   make_comparisons(c)
 

@@ -1,8 +1,12 @@
 {
     "rmse_ci1_and_ci_electmap_direct": 37.42481334713283,
     "mae_ci1_and_ci_electmap": 35.8645802891933,
+    "rmse_ci3_and_ci_electmap_direct": 11.493016954553578,
+    "mae_ci3_and_ci_electmap": 9.98176522070015,
+    "rmse_ci5_and_ci_electmap_direct": 14.129321842154281,
+    "mae_ci5_and_ci_electmap": 12.694929604261796,
     "rmse_per_renew_and_pre_renew_electmap": 2.471022964301737,
     "mae_per_renew_and_pre_renew_electmap": 1.974957382039574,
-    "update_date": "2024-02-08 14:33:42",
+    "update_date": "2024-02-19 08:13:11",
     "country": "FR"
 }
