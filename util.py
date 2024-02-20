@@ -96,8 +96,8 @@ def get_today_starting_date():
 
 
 
-def read_actual_data_file(ccode):
-  file = DATA_folder_location+"/"+ccode+"-actual-60.csv"
+def read_actual_data_file(ccode,interval="60"):
+  file = DATA_folder_location+"/"+ccode+"-actual-"+interval+".csv"
   currentData = pd.read_csv(file)
   currentData = currentData.drop(currentData.columns[0], axis=1)
   # currentData['startTime'] = currentData['startTime'].astype(str)

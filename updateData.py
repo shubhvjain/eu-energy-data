@@ -62,10 +62,10 @@ def reCalcAll():
 
 
 
-def addCarbonIntensityValueToData(cname):
+def addCarbonIntensityValueToData(cname,interval="60"):
   #print(1)
-  file = ut.DATA_folder_location+"/"+cname+"-actual-60.csv"
-  currentData = ut.read_actual_data_file(cname)
+  file = ut.DATA_folder_location+"/"+cname+"-actual-"+interval+".csv"
+  currentData = ut.read_actual_data_file(cname,interval)
   # re-calculate percentage 
   currentData["ci1"] =  currentData.apply(lambda row: ci.calculate_carbon_intensity(row,"codecarbon1"), axis=1)
   currentData["ci2"] =  currentData.apply(lambda row: ci.calculate_carbon_intensity(row,"ipcc_min"), axis=1)
@@ -74,6 +74,7 @@ def addCarbonIntensityValueToData(cname):
   currentData["ci5"] =  currentData.apply(lambda row: ci.calculate_carbon_intensity(row,"eu"), axis=1)
   
   currentData.to_csv(file)
+
 
 
 def updateAdditionalFields():
@@ -118,6 +119,7 @@ def function_three():
   # reCalcAll() 
   #addCarbonIntensityValueToData("BE")
   # updateAdditionalFields()
+  # addCarbonIntensityValueToData("DE","15")
 
 # Define help messages and function mappings in a single dictionary
 arguments_dict = {

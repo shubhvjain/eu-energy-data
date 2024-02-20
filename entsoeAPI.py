@@ -193,6 +193,32 @@ def convert_to_60min_interval(rawData):
         newGroupedData["startTimeUTC"] = new_timestamps
         return newGroupedData
 
+def get_actual_energy_production(country, start, end, interval60=False) -> pd.DataFrame:
+    """Returns time series data containing the actual generation per production without any additional fields in the dataframe
+    The data is sourced from the ENTSOE APIs and subsequently refined. 
+    To obtain data in 60-minute intervals (if not already available), set 'interval60' to True
+    """
+    options = {"country": country, "start": start,
+               "end": end, "interval60": interval60}
+    # get actual generation data per production type and convert it into 60 min interval if required
+    totalRaw = entsoe_get_actual_generation(options)
+    total = totalRaw["data"]
+    duration = totalRaw["duration"]
+    if options["interval60"] == True and totalRaw["duration"] != 60.0:
+        table = convert_to_60min_interval(totalRaw)
+        duration = 60
+    else:
+        table = total
+
+    # new columns 
+    # startTime,endTime    
+    table.rename(columns={'startTimeUTC': 'startTime'}, inplace=True)
+    table['startTime'] = pd.to_datetime(table['startTime'], format='%Y%m%d%H%M')
+    table['endTime'] = table['startTime'] + pd.Timedelta(minutes=duration)
+    table['startTime'] =   table['startTime'].dt.strftime('%Y%m%d%H%M')
+    table['endTime'] =   table['endTime'].dt.strftime('%Y%m%d%H%M') 
+    return table,duration
+
 
 def get_actual_percent_renewable(country, start, end, interval60=False) -> pd.DataFrame:
     """Returns time series data containing the percentage of energy generated from renewable sources for the specified country within the selected time period. 
